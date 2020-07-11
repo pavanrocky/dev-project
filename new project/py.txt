@@ -1,0 +1,2238 @@
+Q1. Explain Python
+Python, a programming language that has modules, threads, automatic memory management, objects, and exceptions. Pythons are easy and simple to use, open-source, extensible, transferrable, and build-in data structure.
+
+Q2. Which is the shortest way to read a file? 
+ 
+class=slide_toggle_content style="display: none;">
+Two memory-efficient ways in ranked order (first
+is best) –
+use of with – supported from python 2.5 and above
+2. use of yield if you really want to have control over how much to read
+1.USE OF WITH
+with is the nice and efficient pythonic way to read large files.
+Advantages:
+1) File object is automatically closed after exiting from with execution block.
+2) Exception handling inside the with block. 3) memory for loop iterates through the f file object line by line. internally it does buffered IO (to optimized on costly IO operations) and memory management. with open(“x.txt”) as f: for line in f: do something with data.
+3)The with statement handles opening and closing the file, including if an exception is raised in the inner block. The for line in f treats the file object f as an iterable, which automatically uses buffered IO and memory management so you don’t have to worry about large files.
+USE OF YIELD
+Sometimes one might want more fine-grained control over how much to read in each iteration. In that case use iter &amp; yield. Note with this method one explicitly needs close the file at the end.
+def readInChunks(fileObj, chunkSize=2048):
+“””
+Lazy function to read a file piece by piece.
+Default chunk size: 2kB.
+“””
+while True:
+data = fileObj.read(chunkSize)
+if not data:
+break
+yield data
+f = open(‘bigFile’)
+for chuck in readInChunks(f):
+do_something(chunk)
+f.close()
+
+Q3. Why is &lt;__init__.py> module used in Python? 
+ 
+class=slide_toggle_content style="display: none;">
+The &lt;__init__.py> module can help in fulfilling following objectives.
+1. It makes Python interpret directories as containing packages by excluding the ones with a common name such as string.
+It grants a programmer with the control to decide which directory is a package and which is not.
+However, the &lt;__init__.py> can also be an empty file. It can then help in executing the initialization code for a package or setting the &lt;__all__> variable.
+
+Q4. What are the different methods Python provides for copying an object? 
+ 
+class=slide_toggle_content style="display: none;">
+We can either use a “Shallow Copy” or follow a “Deep Copy” approach.
+Shallow Copy method.
+The content of an object (say dictionary) doesn’t get copied by value but by creating a new reference.
+SHALLOW COPY METHOD.
+>>> a = {1: [1,2,3]}
+>>> b = a.copy()
+>>> a, b
+({1: [1, 2, 3]}, {1: [1, 2, 3]})
+>>> a[1].append(4)
+>>> a, b
+({1: [1, 2, 3, 4]}, {1: [1, 2, 3, 4]})
+1
+2
+3
+4
+5
+6
+7
+>>> a = {1: [1,2,3]}
+>>> b = a.copy()
+>>> a, b
+({1: [1, 2, 3]}, {1: [1, 2, 3]})
+>>> a[1].append(4)
+>>> a, b
+({1: [1, 2, 3, 4]}, {1: [1, 2, 3, 4]})
+DEEP COPY METHOD.
+It copies all the contents by value.
+>>> c = copy.deepcopy(a)
+>>> a, c
+({1: [1, 2, 3, 4]}, {1: [1, 2, 3, 4]})
+>>> a[1].append(5)
+>>> a, c
+({1: [1, 2, 3, 4, 5]}, {1: [1, 2, 3, 4]})
+1
+2
+3
+4
+5
+6
+>>> c = copy.deepcopy(a)
+>>> a, c
+({1: [1, 2, 3, 4]}, {1: [1, 2, 3, 4]})
+>>> a[1].append(5)
+>>> a, c
+({1: [1, 2, 3, 4, 5]}, {1: [1, 2, 3, 4]})
+
+Q5. How will you set a global variable inside a function? 
+ 
+class=slide_toggle_content style="display: none;">
+You can use a global variable in other functions by declaring it as global in each function that assigns to it:
+globvar = 0
+def set_globvar_to_one():
+global globvar # Needed to modify global
+copy of globvar
+globvar = 1
+def print_globvar():
+print globvar # No need for global
+declaration to read value of globvar
+set_globvar_to_one()
+print_globvar() # Prints 1
+1
+2
+3
+4
+5
+6
+7
+8
+I imagine the reason for it is that, since global variables are so dangerous, Python wants to make sure that you really know that’s what you’re playing with by explicitly requiring the global keyword.
+
+Q6. forelse in python
+class=slide_toggle_content style="display: none;">
+Python has an interesting for statement which lets you specify an else suite.
+In a construct like this one:
+for i in foo:
+if bar(i):
+break
+else:
+baz()
+the else suite is executed after the for, but only if the for terminates normally (not by a break).
+Here’s some code written without for…else:
+def contains_even_number(l):
+“Prints whether or not the list l contains an even number.”
+has_even_number = False
+for elt in l:
+if elt % 2 == 0:
+has_even_number = True
+break
+if has_even_number:
+print “list contains an even number”
+else:
+print “list does not contain an even number”
+The equivalent code snippet below illustrates how the use of for…else lets you remove an extraneous flag variable from that loop:
+def contains_even_number(l):
+“Prints whether or not the list l contains an even number.”
+for elt in l:
+if elt % 2 == 0:
+print “list contains an even number”
+break
+else:
+print “list does not contain an even number”
+Use your good judgment when deciding whether to use the for…else construct.
+It’s not unequivocally better, but when there’s an asymmetry between the two possibilities, you can make your code more readable by using for…else to keep the “happy path” logic at the top and the exceptional/error case at the bottom.
+
+Q7. How to make class iterable
+class=slide_toggle_content style="display: none;">
+Iterator objects in python conform to the iterator protocol, which basically means they provide two methods:
+__iter__() and next().
+The __iter__ returns the iterator object and is implicitly called at the start of loops.
+The next() method returns the next value and is implicitly called at each loop increment.
+next() raises a StopIteration exception when there are no more value to return, which is implicitly captured by looping constructs to stop iterating.
+Here’s a simple example of a counter:
+class Counter:
+def __init__(self, low, high):
+self.current = low
+self.high = high
+def __iter__(self):
+return self
+def next(self): # Python 3: def
+__next__(self)
+if self.current > self.high:
+raise StopIteration
+else:
+self.current += 1
+return self.current – 1
+for c in Counter(3, 8):
+print c
+This will print:
+3
+4
+5
+6
+7
+8
+
+Q8. Conditional Import in Python
+class=slide_toggle_content style="display: none;">
+You could except the ImportError exception:
+try:
+from Pyside2 import QtCore, QtGui
+except ImportError:
+from PySide import QtCore, QtGui
+Alternatively, you can use the importlib module:
+import importlib
+import sys
+PySide = importlib.import_module(‘Pyside2’ if
+‘Pyside2’ in sys.modules else ‘PySide’)
+
+Q9. Write a class which will count the number
+class=slide_toggle_content style="display: none;">
+object created of that class.USING STATIC METHOD.
+class Base:
+numOfInstances = 0
+def __init__(self):
+Base.numOfInstances += 1
+def getNumInstances():
+print Base.numOfInstances
+# Using python built-in staticmethod,
+@decoration symbol also can be used
+getNumInstances = staticmethod(getNumInstances)
+b1 = Base()
+b1.getNumInstances()
+# It should print 1
+b2 = Base()
+b2.numOfInstances = 15
+b1.getNumInstances()
+# It should print 2
+b2.getNumInstances()
+#It should print 2
+Lets extend Base class and see what happens –
+class Base:
+numOfInstances = 0
+def __init__(self):
+Base.numOfInstances += 1
+def getNumInstances():
+print Base.numOfInstances
+# Using python built-in staticmethod,@decoration symbol also can be used
+getNumInstances =staticmethod(getNumInstances)
+class Derived(Base):
+numOfInstances = 0
+def __init__(self):
+Derived.numOfInstances +=1
+b1 = Base()
+d1 = Derived()
+d2 = Derived()
+d1.getNumInstances()
+#It’s printing 1 But we have created 2 instances of Derived
+Derived.getNumInstances()
+#It’s printing 1 But we have created 2 instances of Derived
+We shouldn’t use static method –
+1.If we have to act on data which may differ among instances of a class. (Instance Method should be used in such scenario)
+2. If we have to act on data which may differ for class objects in a class hierarchy. (Class Method should be used in such scenario)
+You might want to know then where should we use static method ? 
+
+It’s safe to use static method if it’s not acting on any data or a method which can be used by all the instances and all the classes in hierarchy. Static Method is best suited if Base class needs to keep count of instances of all it’s subclass too.
+class Base:
+numOfInstances = 0
+def __init__(self):
+Base.numOfInstances += 1
+def getNumInstances():
+print Base.numOfInstances
+getNumInstances =
+staticmethod(getNumInstances)
+class Derived(Base):
+def __init__(self):
+Base.__init__(self)
+b1 = Base()
+d1 = Derived()
+d2 = Derived()
+d1.getNumInstances()
+#It should print 3
+Base.getNumInstances()
+#It should print 3
+
+Q10. Write a class which will count the number object created of that class.USING CLASS METHOD: 
+class=slide_toggle_content style="display: none;">
+class Base:
+numOfInstances = 0
+def countInstances(cls):
+cls.numOfInstances += 1
+countInstances = classmethod(countInstances)
+def getNumInstances(cls):
+print cls.numOfInstances
+getNumInstances = classmethod(getNumInstances)
+def __init__(self):
+self.countInstances()
+class Derived(Base):
+numOfInstances = 0
+def __init__(self):
+Base.__init__()
+# Why we call explicitly to super class’s
+__init__ ? 
+? 
+
+#people from c++ background who already know oops, We will talk about operator overloading in another article
+b1 = Base()
+b2 = Base()
+d1 = Derived()
+d2 = Derived()
+d3 = Derived()
+b1.getNumInstances()
+Base.getNumInstances()
+#Both should print 2
+d1.getNumInstances()
+Derived.getNumInstances()
+#Both should print 3
+
+Q11. Difference between read and readline
+class=slide_toggle_content style="display: none;">
+Both are used to read the content from the file but in different ways.
+f.read() reads the whole file as an individual string and allows relatively easy file-wide manipulations, such as a file-wide regex search or substitution.
+If file xyz.py contains text
+“`def print_triangle(n):
+for x in range(1, n + 1):
+num_list = [str(num % 10) for num in range(x, 2*x)]“`
+If i write below code with open(‘xyz.py’, ‘r’) as f:
+print f.read()
+The o/p will be whole file
+>>> def print_triangle(n):
+for x in range(1, n + 1):
+num_list = [str(num % 10) for num in range(x, 2*x)] f.readline() reads a single line of the file, allowing the user to parse a single line without reading the entire file.
+If i use only readline()
+with open(‘xyz.py’, ‘r’) as f:
+print f.readline()
+The o/p will be whole file
+>>> def print_triangle(n):
+
+Q12. Explain different ways to trigger or raise exceptions in your python script ? 
+ 
+class=slide_toggle_content style="display: none;">
+You can trigger an exception in your Python script in following ways.
+1. raise – it is used to manually raise an exception:
+raise exception-name (“message”)
+Eg: >>> voting_age = 15
+>>> if voting_age &lt; 18: raise ValueError(“voting age should be atleast 18 and above”)
+O/p: ValueError: voting age should be atleast 18 and above
+assert statement assert statements are used to tell your program to test that condition attached to assert keyword, and trigger an exception whenever the condition becomes false.
+Eg: >>> a = -10
+>>> assert a > 0 #to raise an exception whenever a is a negative number
+O/p: AssertionError
+Another way of raising and exception can be done by making a programming mistake, but that’s not usually a good way of triggering an exception.
+
+Q13. How is Inheritance and Overriding methods are related? 
+ 
+class=slide_toggle_content style="display: none;">
+If class A is a subclass of class B, then everything in B is accessible in /by class A. In addition, class A can define methods that are unavailable in B, and also it is able to override methods in B. For Instance, If class B and class A both contain a method called func(), then func() in class B can override func() in class A. Similarly, a method of class A can call another method defined in A that can invoke a method of B that overrides it.
+
+Q14. What are the different methods Python provides for copying an object? 
+ 
+class=slide_toggle_content style="display: none;">
+We can either use a “Shallow Copy” or follow a “Deep Copy” .
+Shallow Copy method.
+The content of an object (say dictionary)doesn’t get copied by value but by creating a new reference.
+SHALLOW COPY METHOD.
+>>> a = {1: [1,2,3]}
+>>> b = a.copy()
+>>> a, b
+({1: [1, 2, 3]}, {1: [1, 2, 3]})
+>>> a[1].append(4)
+>>> a, b
+({1: [1, 2, 3, 4]}, {1: [1, 2, 3, 4]})
+1
+2
+3
+4
+5
+6
+7
+>>> a = {1: [1,2,3]}
+>>> b = a.copy()
+>>> a, b
+({1: [1, 2, 3]}, {1: [1, 2, 3]})
+>>> a[1].append(4)
+>>> a, b
+({1: [1, 2, 3, 4]}, {1: [1, 2, 3, 4]})
+DEEP COPY METHOD.
+It copies all the contents by value.
+>>> c = copy.deepcopy(a)
+>>> a, c
+({1: [1, 2, 3, 4]}, {1: [1, 2, 3, 4]})
+>>> a[1].append(5)
+>>> a, c
+({1: [1, 2, 3, 4, 5]}, {1: [1, 2, 3, 4]})
+1
+2
+3
+4
+5
+6
+>>> c = copy.deepcopy(a)
+>>> a, c
+({1: [1, 2, 3, 4]}, {1: [1, 2, 3, 4]})
+>>> a[1].append(5)
+>>> a, c
+({1: [1, 2, 3, 4, 5]}, {1: [1, 2, 3, 4]})
+
+Q15. Does Python supports interfaces like in Java? 
+ Discuss. 
+class=slide_toggle_content style="display: none;">
+Python does not provide interfaces like in Java. Abstract Base Class (ABC) and its feature are provided by the Python’s “abc” module. Abstract Base Class is a mechanism for specifying what methods must be implemented by its implementation subclasses. The use of ABC’ provides a sort of “understanding” about methods and their expected behaviour. This module
+was made available from Python 2.7 version onwards.
+
+Q16. Forelse in python
+class=slide_toggle_content style="display: none;">
+Python has a for syntax which can be combined with else syntax.
+for i in foo:
+if bar(i):
+break
+else:
+baz()
+the else suite is executed after the for, but only if the for terminates normally.
+Here’s code written without for…else:
+def contains_even_number(l):
+“Prints whether or not the list l
+contains an even number.”
+has_even_number = False
+for elt in l:
+if elt % 2 == 0:
+has_even_number = True
+break
+if has_even_number:
+print “list contains an even number”
+else:
+print “list does not contain an even
+number”
+The equivalent code snippet below illustrates how the use of for…else lets you remove flag variable from that loop:
+def contains_even_number(l):
+“Prints whether or not the list l
+contains an even number.”
+for elt in l:
+if elt % 2 == 0:
+print “list contains an even number”
+break
+else:
+print “list does not contain an even number”
+Use your good judgment when deciding whether to use the for else construct.When there’s an asymmetry between the two possibilities, you can make the code more readable by using for…else to keep the exceptional/error case at the bottom.
+
+Q17. What are Accessors, mutators, @property? 
+ 
+class=slide_toggle_content style="display: none;">
+Accessors and mutators are called getters and setters in language like “Java”. For example, if x is a property of a user-defined class, then the class would have methods called setX() and getX(). Python has @property “decorator” that allows you to add getters and setters to access the attribute of the class.
+
+Q18. In the case of Multiple inheritance, if a child class C is derived from two base classes say A and B as: class C(A, B):
+—
+which parent class method will be invoked by the interpreter whenever object of class C calls a method func() that is existing in both the parent classes say A and B and does not exist in class C as “c1.func()”? 
+
+class=slide_toggle_content style="display: none;">
+since class C does not contain the definition of the method func(), they Python searches for the func() in parent classes. As the search is performed in a left-to-right fashion, Python executes the method func() which is  present in class A and not the func() method in B.
+
+Q19. Write a class which will count the number object created of that class. 
+class=slide_toggle_content style="display: none;">
+USING STATIC METHOD.
+class Base:
+numOfInstances = 0
+def __init__(self):
+Base.numOfInstances += 1
+def getNumInstances():
+print Base.numOfInstances
+# Using python built-in staticmethod,@decoration symbol also can be used
+getNumInstances = staticmethod(getNumInstances)
+b1 = Base()
+b1.getNumInstances()
+# It should print 1
+b2 = Base()
+b2.numOfInstances = 15
+b1.getNumInstances()
+# It should print 2
+b2.getNumInstances()
+#It should print 2
+Lets extend Base class and see what happens –
+class Base:
+numOfInstances = 0
+def __init__(self):
+Base.numOfInstances += 1
+def getNumInstances():
+print Base.numOfInstances
+# Using python built-in staticmethod, @decoration symbol also can be used
+getNumInstances = staticmethod(getNumInstances)
+class Derived(Base):
+numOfInstances = 0
+def __init__(self):
+Derived.numOfInstances +=1
+b1 = Base()
+d1 = Derived()
+d2 = Derived()
+d1.getNumInstances()
+#It’s printing 1 But we have created 2 instances of Derived
+Derived.getNumInstances()
+#It’s printing 1 But we have created 2 instances of Derived
+We shouldn’t use static method –
+If we have to act on data which may differ among instances of a class. (Instance Method should be used in such scenario)
+If we have to act on data which may differ for class objects in a class hierarchy. (Class Method should be used in such scenario).
+You can use static method if it is not acting on any data or a method which can be used by all the instances and all the classes in hierarchy. Static Method is used if Base class needs to keep count of instances of all it’s subclass too.
+Class Base:
+numOfInstances = 0
+def __init__(self):
+Base.numOfInstances += 1
+def getNumInstances():
+print Base.numOfInstances
+getNumInstances = staticmethod(getNumInstances)
+class Derived(Base):
+def __init__(self):
+Base.__init__(self)
+b1 = Base()
+d1 = Derived()
+d2 = Derived()
+d1.getNumInstances()
+#It should print 3
+Base.getNumInstances()
+#It should print 3
+
+Q20. Write a class which will count the number object created of that class. 
+class=slide_toggle_content style="display: none;">
+USING CLASS METHOD:
+class Base:
+numOfInstances = 0
+def countInstances(cls):
+cls.numOfInstances += 1
+countInstances = classmethod(countInstances)
+def getNumInstances(cls):
+print cls.numOfInstances
+getNumInstances = classmethod(getNumInstances)
+def __init__(self):
+self.countInstances()
+class Derived(Base):
+numOfInstances = 0
+def __init__(self):
+Base.__init__()
+b1 = Base()
+b2 = Base()
+d1 = Derived()
+d2 = Derived()
+d3 = Derived()
+b1.getNumInstances()
+Base.getNumInstances()
+#Both should print 2
+d1.getNumInstances()
+Derived.getNumInstances()
+#Both should print 3
+
+Q21. Given a list and a number find two numbers in the list that sums up to the number given? 
+ 
+class=slide_toggle_content style="display: none;">
+a = [1,2,3,4,5,6,8] given_no = 9
+mm = [] count =0
+for x,y in enumerate(a):
+for j in range(x+1, len(a)):
+total_of_two_items = a[x] + a[j] if total_of_two_items == given_no:
+mm.append((a[x],a[j]))
+print mm
+
+Q22. Difference between mutable and immutable  Mutable : 
+class=slide_toggle_content style="display: none;">
+list, dict, set, byte array Immutable :
+int, float, complex, string, tuple, frozen set ,bytes
+x = 10
+x = y
+We are creating an object of type int. identifiers x and y points to the same object.
+id(x) == id(y)
+id(y) == id(10)
+if we do a simple operation.
+x = x + 1
+Now
+id(x) != id(y)
+id(x) != id(10)
+The object x is changed. object 10 was never modified. Immutable objects does not allow modification after creation of objects.
+In the case of mutable objects-
+m = list([1, 2, 3])
+n = m
+We are creating an object of type list. identifiers m and m tagged to the same list object, which is a collection of 3 immutable int objects.
+id(m) == id(n)
+Now pop an item from list does change the object, m.pop() object id will not be changed id(m) == id(n) m and n are pointing to the same list object after the modification. The list object will be [1, 2].
+Python handles mutable and immutable objects differently.
+Immutable are quicker to access than mutable objects.
+Mutable objects are used when you need to change the size of the object, eg list, dict etc.. Immutables are used when you need to ensure that the object you have created will always stay the same.
+Immutable objects are expensive to “change”, because that involves creating a copy. Changing mutable objects is cheap.
+
+Q23. Which is the shortest way to read a file? 
+ 
+class=slide_toggle_content style="display: none;">
+Two memory efficient ways in ranked order (first is best) –
+use of with – supported from python 2.5 and above
+use of yield if you really want to have control over how much to read
+USE OF WITH with statement is the nice &amp; efficient way to read large files. advantages –
+File object is automatically closed after exiting from with block.
+Exception handling inside the with block.
+Memory for loop iterates through the f file object line by line. internally it does buffered IO and memory management.
+with open(“x.txt”) as f:
+for line in f:
+do something with data
+The with statement handles opening and closing the file and also if an exception is raised in the inner block. The for line in f is the file object f as an iterable, which automatically uses buffered IO and memory management so you don’t have to worry about large files.
+USE OF YIELD
+Sometimes one might want more fine-grained control over how much to read in each iteration. In that case use iter &amp; yield. Note with this method one explicitly needs close the file at the end.
+def readInChunks(fileObj, chunkSize=2048):
+“””
+Lazy function to read a file piece by piece.
+Default chunk size: 2kB.
+“””
+while True:
+data = fileObj.read(chunkSize)
+if not data:
+break
+yield data
+f = open(‘bigFile’)
+for chuck in readInChunks(f):
+do_something(chunk)
+f.close()
+
+Q24. Why is &lt;__init__.py> module used in Python? 
+ 
+class=slide_toggle_content style="display: none;">
+The &lt;__init__.py> module can help in fulfilling following objectives.
+It makes Python interpret directories as containing packages by excluding the ones with a common name such as string.
+It grants a programmer with the control to decide which directory is a package and which is not.
+However, the &lt;__init__.py> can also be an empty file. It can then help in executing the initialization code for a package or setting the &lt;__all__> variable.
+
+Q25. Which methods of Python are used to determine the type of instance and Inheritance? 
+ 
+class=slide_toggle_content style="display: none;">
+Python has two built-in functions that work with inheritance:
+isinstance() – this method checks the type of instance.
+For eg, isinstance(myObj, int) – returns True only when “myObj. class ” is “int”.
+issubclass() – this method checks class inheritance.
+For eg: issubclass(bool, int) – returns True because “bool” is a subclass of “int”.
+issubclass(unicode, str) – returns False because “unicode” is not a subclass of “str”.
+
+Q26. Conditional Import in Python
+class=slide_toggle_content style="display: none;">
+For example you could except the Import Error exception:
+try:
+from Pyside2 import QtCore, QtGui
+except ImportError:
+from PySide import QtCore, QtGui
+Alternatively, you can use the importlib module:
+import importlib
+import sys
+PySide = importlib.import_module(‘Pyside2’ if ‘Pyside2’ in sys.modules else ‘PySide’)
+
+Q27. Differentiate between “*.py” file nad “*.pyc” file? 
+ 
+class=slide_toggle_content style="display: none;">
+Both .py and .pyc files holds the byte code. “.pyc” is a compiled version of Python file. This file is automatically generated by Python to improve the performance. The .pyc file is having bytecode which is platform independent. It can be executed on any operating system that supports .pyc format.
+Note: there is no difference in speed when program is read from .pyc or .py file; the only difference is the load time.
+
+Q28. How to retrieve data from a table in MySQL database through Python code? 
+ Explain. 
+class=slide_toggle_content style="display: none;">
+Import MySQLdb module as : import MySQLdb
+Establish a connection to the database. db = MySQLdb.connect(“host”=”local host”, “database-user”=”user-name”, “password”=”password”, “database-name”=”database”)
+Initialize the cursor variable upon the established connection: c1 = db.cursor()
+Retrieve the information by defining a required query string. s = “Select * from dept”
+Fetch the data using fetch() methods and print it. data = c1.fetch(s)
+Close the database connection. db.close()
+
+Q29. Explain about ODBC and Python ? 
+ 
+class=slide_toggle_content style="display: none;">
+ODBC (“Open Database Connectivity) API standard allows the connections with any database that supports the interface, such as PostgreSQL database or Microsoft Access in a transparent manner .
+There are 3 ODBC modules for Python:
+PythonWin ODBC module – limited development
+mxODBC – commercial product
+Pyodbc – it is an open source Python package.
+
+Q30. How to define a protected member in a Python class? 
+ 
+class=slide_toggle_content style="display: none;">
+All the members of a class are public by default in Python. You don’t need to define an access specifier for members of class. By adding `_` as prefix to the member of a class. By adding this convention you are telling others please don’t use this object, if you are not a subclass the respective class.
+Eg: class Person:
+empid = None
+_salary = None #salary is a protected member &amp; it can accessible by the subclasses of Person
+
+Q31. How do you remove duplicates from a list? 
+ 
+class=slide_toggle_content style="display: none;">
+Sort the list
+Scan the list from the end.
+While scanning from right-to-left, delete all the duplicate elements from the list
+
+Q32. How do you check if file exists and their types in Python? 
+ 
+class=slide_toggle_content style="display: none;">
+os.path.exists() – use this method to check if a file exists or not. It will return True if the file exists, false otherwise. Eg: import os; os.path.exists(‘/home/abc’)
+os.path.isfile() – this method is used to check whether the give path is a file or not. It will return True if t the file exists , else it will return false. Eg: import os; os.path.isfile(‘/home/abc’)
+os.path.isdir() – this method is used to check whether the give path references a directory or not. It will return True if the directory exists, else it will return false. Eg: import os;
+os.path.isfile(‘/home/abc’)
+os.path.getsize() – returns the size of the given file os.path.getmtime() – returns the timestamp of the given path.
+
+Q33. How are the functions help() and dir() different? 
+ 
+class=slide_toggle_content style="display: none;">
+help() and dir() are the 2 functions which you can access from Python Interpreter(terminal). These 2 functions are used for viewing a dump of built-in functions.
+help() – it will display the documentation string. It is used to see the help related to modules, keywords, attributes, etc.
+To view any help related to string type execute a statement
+help(str) – it will display the documentation for ‘str, module.
+Ex:
+>>>help(str) or
+>>>help() – it will open the prompt for help as help>
+to view help for a module, help> module module name Inorder to view the documentation of ‘str’ at the help>, type help>modules str
+to view help for a keyword, topics, you need to type, help> “keywords python-keyword” and “topics list”
+dir() – will display the defined symbols.
+Ex: >>>dir(str) – will only display the defined symbols.
+
+Q34. Does the functions help() and dir() list the names of all the built_in functions and variables? 
+ If no, how would you list them? 
+ 
+class=slide_toggle_content style="display: none;">
+The answer is No. So the builtin functions for eg max(), min(), filter(), map(), etc they are functions of standard module.To view them, we can pass the module ” builtins ” as an argument to “dir()”. It will display the all builtin exceptions, functions, and other objects as a list. For eg, >>dir(__builtins )  [‘AssertionError’,‘ArithmeticError’, ‘AttributeError’, ……… ]
+
+Q35. How to make class iterable
+class=slide_toggle_content style="display: none;">
+Iterator objects in python conform to the iterator protocol, which basically means they provide two methods:
+__iter__() and next().
+The __iter__ returns the iterator object and is implicitly called at the start of loops. The next() method returns the next value and is implicitly called at each loop increment.
+next() raises a StopIteration exception when there are no more value to return, which is implicitly captured by looping constructs to stop iterating.
+Here’s a simple example of a counter:
+Class Counter:
+def __init__(self, low, high):
+self.current = low
+self.high = high
+def __iter__(self):
+return self
+def next(self): # Python 3: def
+__next__(self)
+if self.current > self.high:
+raise StopIteration
+else:
+self.current += 1
+return self.current – 1
+for c in Counter(3, 8):
+print c
+This will print:
+3
+4
+5
+6
+7
+8
+
+Q36. Whenever Python exists Why does all the memory is not de-allocated or freed when Python exits? 
+ 
+class=slide_toggle_content style="display: none;">
+Whenever Python exists, especially those python modules which are having circular references to other objects or the objects that are referenced from the global namespaces are not always deallocated/freed/uncollectable.
+It is not possible to deallocate those parts of memory that are reserved/booked by libraries in C. On exit, because of having its own efficient deallocation mechanism, Python would try to deallocate/ destroy every object.
+
+Q37. Explain Python’s zip() function.? 
+ 
+class=slide_toggle_content style="display: none;">
+zip() function- it will take multiple lists say list1, list2, etc and convert them into a single list of tuples by taking their corresponding elements of the lists that are passed as parameters.
+Eg:
+list1 = [‘A’,
+‘B’,’C’] and list2 = [10,20,30].
+zip(list1, list2) # results in a list of tuples say
+[(‘A’,10),(‘B’,20),(‘C’,30)] whenever the given lists are of different lengths, zip stops generating tuples when the first list ends.
+
+Q38. There are given 2 numbers (where 6 can also be written as 5, and 5 as 6).
+#WAP to calculate the maximum and minimum possible sum
+class=slide_toggle_content style="display: none;">
+import copy
+x = 645
+y = 666
+dig1 = list(str(x))
+dig2 = list(str(y))
+bb = [] vv = [] for i,j in enumerate(dig1):
+temp1 = [] if j == ‘5’ or j == ‘6’:
+temp1 = copy.deepcopy(dig1)
+if j == ‘5’:
+temp1[i] = ‘6’
+else:
+temp1[i] = ‘5’
+bb.append(”.join(temp1))
+for k,l in enumerate(dig2):
+temp2 = [] if l == ‘5’ or l == ‘6’:
+temp2 = copy.deepcopy(dig2)
+if l == ‘5’:
+temp1[k] = ‘6’
+else:
+temp1[k] = ‘5’
+vv.append(”.join(temp2))
+nn = zip(bb,vv)
+aa = [] for no in nn:
+temp = list(no)
+aa.append(int(temp[0])+int(temp[1]))
+print aa
+print “max=” + str(max(aa))
+print “min=” + str(min(aa))
+
+Q39. Explain Python’s pass by references Vs pass by value . (or) Explain about Python’s parameter passing mechanism? 
+ 
+class=slide_toggle_content style="display: none;">
+In Python, by default, all the parameters (arguments) are passed “by reference” to the functions. Thus, if you change the value of the parameter within a function, the change is reflected in the calling function.
+We can see the pass “by value” kind of a behaviour every time we pass arguments to the functions that are of type say strings, numbers, tuples. This is because of the immutable nature of them.
+
+Q40. Explain how to overload constructors or methods in Python. 
+class=slide_toggle_content style="display: none;">
+This is how you can overload the constructors Python constructor – _init__ () is a first method of a class. Every time we try to instantiate an object __init__() is automatically invoked by
+python to initialize members of an object.
+
+Q41. Explain the shortest way to open a text file and display its Contents.? 
+ 
+class=slide_toggle_content style="display: none;">
+The shortest way to open a text file is by using “with” command as follows:
+with open(“file-name”, “r”) as fp:
+fileData = fp.read()
+#to print the contents of the file print(fileData)
+
+Q42. Fill in the missing code: def print_directory_contents(sPath): 
+class=slide_toggle_content style="display: none;">
+“””
+This particular function takes the name of a directory and prints the paths files within that directory as well as any files contained in the contained directories.
+This function is similar to os.walk. Please don’t use os.walk in your answer. We are interested in your ability to work with nested structures.
+“””
+fill_this_in Answer
+def print_directory_contents(sPath):
+import os
+for sChild in os.listdir(sPath):
+sChildPath = os.path.join(sPath,sChild)
+if os.path.isdir(sChildPath):
+print_directory_contents(sChildPath)
+else:
+print(sChildPath)
+
+Q43. Determine the o/p of following. 
+class=slide_toggle_content style="display: none;">
+A0 = dict(zip((‘a’,’b’,’c’,’d’,’e’),(1,2,3,4,5))) =======> {‘a’: 1, ‘c’: 3, ‘b’: 2, ‘e’: 5, ‘d’: 4}
+zip((‘a’,’b’,’c’,’d’,’e’),(1,2,3,4,5)) ==========> [(‘a’, 1), (‘b’, 2), (‘c’, 3), (‘d’, 4), (‘e’, 5)] dict(zip((‘a’,’b’,’c’,’d’,’e’),(1,2))) =======> {‘a’: 1, ‘b’: 2}
+A1 =range(10) ========> [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+A2 =sorted([i for i in A1 if i in A0])========> [] A3 =sorted([A0[s] for s in A0])========> [1, 3, 2, 5, 4] A4 =[i for i in A1 if i in A3]========> [1, 2, 3, 4, 5] A5 ={i:i*i for i in A1}========> {0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25, 6: 36, 7: 49, 8: 64, 9: 81}
+A6 =[[i,i*i] for i in A1]========> [[0, 0], [1, 1], [2, 4], [3, 9], [4, 16], [5, 25], [6, 36], [7, 49], [8, 64], [9, 81]] [/message
+
+Q44. What does this stuff mean: *args, **kwargs? 
+ And why would we use it? 
+ 
+class=slide_toggle_content style="display: none;">
+We can use *args when we are not sure how many args we are going to pass to a function. We can also use if we want to pass a stored list or tuple of arguments to a function. **kwargs is used when we don’t know how many keyword arguments will
+be passed to a function, or it can be used to pass the values of a dictionary as keyword arguments. The *args and **kwargs are a convention.You can also use *abc and **wxyz .
+Below is the Eg:
+def f(*args,**kwargs): print(args, kwargs)
+l = [1,2,3] t = (4,5,6)
+d = {‘a’:7,’b’:8,’c’:9}
+f()f(1,2,3)
+# (1, 2, 3) {}
+f(1,2,3,”groovy”)
+# (1, 2, 3, ‘groovy’) {}
+f(a=1,b=2,c=3)
+# () {‘a’: 1, ‘c’: 3, ‘b’: 2}
+f(a=1,b=2,c=3,zzz=”hi”)
+# () {‘a’: 1, ‘c’: 3, ‘b’: 2, ‘zzz’: ‘hi’}
+f(1,2,3,a=1,b=2,c=3)
+# (1, 2, 3) {‘a’: 1, ‘c’: 3, ‘b’: 2}
+f(*l,**d)
+# (1, 2, 3) {‘a’: 7, ‘c’: 9, ‘b’: 8}
+f(*t,**d)
+# (4, 5, 6) {‘a’: 7, ‘c’: 9, ‘b’: 8}
+f(1,2,*t)
+# (1, 2, 4, 5, 6) {}
+f(q=”winning”,**d)
+# () {‘a’: 7, ‘q’: ‘winning’, ‘c’: 9, ‘b’: 8}
+f(1,2,*t,q=”winning”,**d) # (1, 2, 4, 5, 6) {‘a’: 7, ‘q’: ‘winning’, ‘c’: 9, ‘b’: 8}
+def f2(arg1,arg2,*args,**kwargs): print(arg1,arg2, args, kwargs)
+f2(1,2,3)
+# 1 2 (3,) {}
+f2(1,2,3,”groovy”)
+# 1 2 (3, ‘groovy’) {}
+f2(arg1=1,arg2=2,c=3)
+# 1 2 () {‘c’: 3}
+f2(arg1=1,arg2=2,c=3,zzz=”hi”) # 1 2 () {‘c’: 3, ‘zzz’: ‘hi’}
+f2(1,2,3,a=1,b=2,c=3)
+# 1 2 (3,) {‘a’: 1, ‘c’: 3, ‘b’: 2}
+f2(*l,**d)
+# 1 2 (3,) {‘a’: 7, ‘c’: 9, ‘b’: 8}
+f2(*t,**d)
+# 4 5 (6,) {‘a’: 7, ‘c’: 9, ‘b’: 8}
+f2(1,2,*t)
+# 1 2 (4, 5, 6) {}
+f2(1,1,q=”winning”,**d)
+# 1 1 () {‘a’: 7, ‘q’: ‘winning’, ‘c’: 9, ‘b’: 8}
+f2(1,2,*t,q=”winning”,**d) # 1 2 (4, 5, 6) {‘a’: 7, ‘q’: ‘winning’, ‘c’: 9, ‘b’: 8}
+
+Q45. What are @classmethod, @staticmethod, @property? 
+ 
+class=slide_toggle_content style="display: none;">
+A decorator is a special kind of function that takes a function and returns a function, or takes a class and returns a class. The @ symbol is just syntax that allows you to decorate something in a way that’s easy to read.
+@my_decorator
+def my_func(stuff):
+do_things
+Is equivalent to
+def my_func(stuff):
+do_things
+my_func = my_decorator(my_func)
+Actual Answer
+The decorators @classmethod, @staticmethod and @property are used on functions defined within classes. Here is how they behave:
+class MyClass(object):
+def __init__(self):
+self._some_property = “properties are nice”
+self._some_other_property = “VERY nice”
+def normal_method(*args,**kwargs):print(“calling normal_method({0},{1})”.format(args,kwargs))
+@classmethod
+def class_method(*args,**kwargs):
+print(“calling class_method({0},{1})”.format(args,kwargs))
+@staticmethod
+def static_method(*args,**kwargs):
+print(“calling static_method({0},{1})”.format(args,kwargs))
+@property
+def some_property(self,*args,**kwargs):
+print(“calling some_property getter({0},{1},{2})”.format(self,args,kwargs))
+return self._some_property
+@some_property.setter
+def some_property(self,*args,**kwargs):
+print(“calling some_property setter({0},{1},{2})”.format(self,args,kwargs))
+self._some_property = args[0] @property
+def some_other_property(self,*args,**kwargs):
+print(“calling some_other_property getter({0},{1},{2})”.format(self,args,kwargs))
+return self._some_other_property
+o = MyClass()
+o.normal_method
+# &lt;bound method MyClass.normal_method of &lt;__main__.MyClass instance at 0x7fdd2537ea28>>
+o.normal_method()
+# normal_method((&lt;__main__.MyClass instance at 0x7fdd2537ea28>,),{})
+o.normal_method(1,2,x=3,y=4)
+# normal_method((&lt;__main__.MyClass instance at 0x7fdd2537ea28>, 1, 2),{‘y’: 4, ‘x’: 3})
+# class methods always get the class ‘cls’ as the first argument
+o.class_method
+# &lt;bound method classobj.class_method of &lt;class __main__.MyClass at 0x7fdd2536a390>>
+o.class_method()
+# class_method((&lt;class __main__.MyClass at 0x7fdd2536a390>,),{})
+o.class_method(1,2,x=3,y=4)
+# class_method((&lt;class __main__.MyClass at 0x7fdd2536a390>, 1, 2),{‘y’: 4, ‘x’: 3})
+# static methods have no arguments except the ones you pass in when you call them
+o.static_method
+# &lt;function static_method at 0x7fdd25375848>
+o.static_method()
+# static_method((),{})
+o.static_method(1,2,x=3,y=4)
+# static_method((1, 2),{‘y’: 4, ‘x’: 3})
+# properties are a way of implementing getters and setters. It is an error to call them explicitly
+o.some_property
+# calling some_property getter(&lt;__main__.MyClass instance at 0x7fb2b70877e8>,(),{})
+# ‘properties are nice’o.some_property()
+# calling some_property getter(&lt;__main__.MyClass instance at 0x7fb2b70877e8>,(),{})
+# Traceback (most recent call last):
+# File “&lt;stdin>”, line 1, in &lt;module>
+# TypeError: ‘str’ object is not callable
+o.some_other_property
+# calling some_other_property getter(&lt;__main__.MyClass instance at 0x7fb2b70877e8>,(),{})
+# ‘VERY nice’
+# o.some_other_property()
+# calling some_other_property getter(&lt;__main__.MyClass instance at 0x7fb2b70877e8>,(),{})
+# Traceback (most recent call last):
+# File “&lt;stdin>”, line 1, in &lt;module>
+# TypeError: ‘str’ object is not callable
+o.some_property = “groovy”
+# calling some_property setter(&lt;__main__.MyClass object at 0x7fb2b7077890>,(‘groovy’,),{})
+o.some_property
+# calling some_property getter(&lt;__main__.MyClass object at 0x7fb2b7077890>,(),{})
+# ‘groovy’
+
+Q46. Write a program to find out the name of an object in python. 
+class=slide_toggle_content style="display: none;">
+The object does not have any name and there is no way the can be found out for objects. The assignment is used to bind a name to the value,it has the name of the object that has to be bound by a value. If the value is callable then the statements are made true.Then the program followed can be used to find the reference name of an object.
+class try:pass
+B = A
+a = B()
+b = a
+print b
+&lt;__main__.try instance at 0x16D07CC>
+print b
+The class consists of name and names are invoked by using the the variable B which creates an instance for the class try.
+
+Q47. Write a program to check whether the object is of a class or its subclass. 
+class=slide_toggle_content style="display: none;">
+There is a builtin method which is to show the instances of an object that consists of many classes by providing a tuple in a table instead of individual classes. The method is written as is instance(obj,cls) and in more details written as: isinstance(obj, (class1, class2, …)) it checks that the object’s presence in one of the classes. The built in types can also have many formats of the same function for eg isinstance(obj, str) or isinstance(obj, (int, long, float, complex)).
+It is not preferred to use the class instead of user-defined class. These perform different thing that is based on the class. The function differs from one class to another class.
+To find out the object of the particular class the following program is used:
+def search(obj):
+if isinstance(obj, box):
+This is the code that is given for the box and write the program in the object
+elif isinstance(obj, Document):
+This is the code that searches the document and writes the values in it
+elif
+obj.search() This is the function used to search the object’s class.
+
+Q48. What is the use of join() for a string rather than list or tuple method? 
+ 
+class=slide_toggle_content style="display: none;">
+The functions and the methods that are used for the functionality uses the string module.
+This is represented as by using the join function in it:
+“, “.join([‘1’, ‘2’, ‘4’, ‘8’, ’16’]) that results in “1, 2, 4, 8, 16”
+The string var that is used provide a fixed string to allow the names that are used to be bounded to the strings. join() is a string method that is used to provide a separator string to use the function over the sequence of the string and insert the function to an adjacent elements.
+This method uses any number of args that follow some rules. The ‘join’ is used for string module that is used to join the string characters together.
+For Eg: string.join([‘1’, ‘2’, ‘4’, ‘8’, ’16’], “, “)
+
+Q49. What are the steps required to make a script executable on Unix? 
+ 
+class=slide_toggle_content style="display: none;">
+The steps which are required to make any script executable are to:
+First create a script file and write the code that has to be executed in it.
+We need to make the file mode as executable by making the first line starting with #! this is the line that python interpreter reads. Set the permission for the file by using chmod +x file. The file uses the line that is the most important line to be used:
+#!/usr/local/bin/python
+The above line explains that the pathname that is given to the python interpreter and it is independent of the environment programs.
+The file’s Absolute path name should be given so that the interpreter can interpret and execute the code accordingly. The sample code that is written:
+#! /bin/sh
+# Write your code here
+exec python $0 ${1+”$@”}
+# Write the function that need to be included.
+
+Q50. Write a program to read and write the binary data using python? 
+ 
+class=slide_toggle_content style="display: none;">
+The module that is used to write and read the binary data is known as struct.. This class contains the binary data. It is in the form of numbers.It gets converted in python objects for use and vice versa.
+The program can read or write the binary data is:
+import struct
+f = open(file-name, “rb”)
+# Open() method allows the file to get opened in binary mode.
+s = f.read(8)
+x, y, z = struct.unpack(“>hhl”, s)
+The ‘>’ is used to show the format string that allows the string to be converted in big data form. For homogenous list of data the array can be used that will allow the data to be kept more in organized fashion.
+
+Q51. Write a program to show the singleton pattern used in python. 
+class=slide_toggle_content style="display: none;">
+Singleton pattern is used to provide a mechanism that limits the number of instances that can be used by one class.
+This also allows the same object to be shared in many different parts of the code. This allows the global variables to be used as the actual data which is used is hidden by the singleton class interface.
+The singleton class interface can have only one public member and one class method Handle. Private constructors are not used to create an object that is used outside the class.
+The process waits for the static member function to create new instances and return the singleton object.
+The code that is used to call the singleton object is:
+Singleton&amp; Singleton::Handle()
+{
+if( !psingle )
+{
+psingle = new Singleton;
+}
+return *psingle;
+}
+
+Q52. What does _init_.py do? 
+ 
+class=slide_toggle_content style="display: none;">
+py is an empty py file which is used for importing a module in a directory. _init_.py provides an easy way to organize the files.
+If there is a module maindir/subdir/module.py,_init_.py is placed in all the directories so that the module can be imported using the following command- import maindir.subdir.module
+
+Q53. You are given a list of N numbers. Create a single list comprehension in Python to create a new list which contains only those values which have even numbers from elements of the list at even indices. 
+class=slide_toggle_content style="display: none;">
+For instance if list[4] has an even value the it has be included in the new output list because it has an even index but if list[5] has an even value it should not be included in the list because it is not at an even index.
+[x for x in list [: 2] if x%2 == 0]
+The above code will take all the numbers present at even indices and then discard the odd numbers.
+
+Q54. What will be the output of the below Python code? 
+ 
+class=slide_toggle_content style="display: none;">
+def xyz ():
+return [lambda x: i * x for i in range (4)] print [m (2) for m in xyz ()] The output for the above code will be [6, 6,6,6]. The reason for this is that because of late binding the value of variable ‘i’ is looked up when any functions returned by ‘xyz’ are called.
+
+Q55. What do you mean by list comprehension? 
+ 
+class=slide_toggle_content style="display: none;">
+The dynamic process of creating a list while performing some operation on the data so that it can be accessed using an iterator is referred to as List Comprehension.
+Example: [ord (j) for j in string.ascii_uppercase] [65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90]
+
+Q56. What will be the output of the below code? 
+ 
+class=slide_toggle_content style="display: none;">
+word = ‘aeioubcdfg’
+print word [:3] + word [3:] The output for the above code will be: ‘aeioubcdfg’.
+
+Q57.How will you set a global variable inside a function? 
+ 
+class=slide_toggle_content style="display: none;">
+You can use a global variable in other func’s by declaring it as global in each func that assigns to it:
+globvar = 0
+def set_globvar_to_one():
+global globvar # Needed to modify global
+copy of globvar
+globvar = 1
+def print_globvar():
+print globvar # No need for global
+declaration to read value of globvar
+set_globvar_to_one()
+print_globvar() # Prints 1
+1
+2
+3
+4
+5
+6
+7
+8
+Global variables are so dangerous so Python wants to make sure that you really know that’s what you’re playing with by explicitly requiring the global keyword.
+
+Q58. list= (1, 2 , 3 , 4 , 5 , 6 , 7 ) 
+class=slide_toggle_content style="display: none;">
+print list [8:] The output for the above code will be an empty list [].
+Most people might get confused in the answer with an index error.
+Because the code is trying to access a member in the list whose index exceeds the total number of members in the list.
+The code is trying to access the slice of a list at a start index which is greater than the number of members in the list.
+
+Q59. What will be the output of the below code? 
+ 
+class=slide_toggle_content style="display: none;">
+def foo (i= []):
+i.append (1)
+return i
+>>> foo ()
+>>> foo ()The output for the above code will be-
+[1] [1, 1] Argument to the function foo is evaluated only once when the function is defined. However, since it is a list, on every
+all the list is modified by appending a 1 to it.
+
+Q60. Find factors of a given no. 
+class=slide_toggle_content style="display: none;">
+def factorial(n):
+if n&lt;=1:
+return 1
+else:
+temp = ”
+for i in range(1,n+1):
+if n % i == 0:
+temp += str(i) +’,’
+return temp
+num = raw_input(“Enter any number: “)
+print factorial(int(num))
+
+Q61. What are the features of python? 
+ 
+class=slide_toggle_content style="display: none;">
+Python is an interpreted language which doesn’t require the compiler to run a program.
+It is dynamically typed and well suited to object-oriented programming as well as it allows the definition of classes, composition, and inheritance.
+Functions and classes are first class objects in python which means they can be assigned to variables, returned from other functions and given into the functions.
+Python can be applied in automation, web applications, big data applications etc.… It is used as “glue” code to get combined with other languages.
+
+Q62. How a list varies from a tuple? 
+ 
+class=slide_toggle_content style="display: none;">
+List are mutable (edited) while Tuple is immutable which can’t be edited.
+Lists slower when compared with Tuples.
+List can have multiple data type in the single list where it can’t happen while using a tuple.
+Syntax: list = [1,’python’, 2.0]
+Syntax: tuple = [1, 2, 3]
+
+Q63. How a dictionary id defined in python? 
+ 
+class=slide_toggle_content style="display: none;">
+Dictionary is one of the built-in datatype in python which is represented with key and corresponding values to it. These are indexed based on keys.
+Example: Dict = {‘Name’: ‘Ayesha’, ‘Age’: 10, ‘School’: ‘DPS’}
+print Dict [Name]
+O/P: Ayesha
+print Dict [Age]
+O/P: 10
+print Dict [School’]
+O/P: DPS
+In the above example Name, Age and School are Keys whereas the O/P are the corresponding values assigned to that keys.
+
+Q64. Why the arguments *args and **kwargs are used? 
+ 
+class=slide_toggle_content style="display: none;">
+When we are not sure about the number of arguments going to be passed with in a function, or if we want to pass a list of argument with in a function then we’ll be using “*args”.
+When we don’t know how many keyword arguments to be passed in a function, or to pass the values of a dictionary as keyword arguments “**kwargs” are used.
+
+Q65. Why we go for negative index representation? 
+ 
+class=slide_toggle_content style="display: none;">
+Generally, in python we start an index representation with ‘0’ followed by integers, when we want in a reverse format we’ll start the index from ‘-1’ and follows.
+Negative index is used to remove new-line spaces from a string and allows a string to except the last character that is given as S [:-1].
+
+Q66. Write a loop with user end input which exits only the input is ‘0’? 
+ 
+class=slide_toggle_content style="display: none;">
+while(True):
+ch = int(input())
+print (“Enter value :”)
+print(“HELLO WORLD”)
+if (ch == 0):
+exit()
+
+Q67. Write a program to start a list from Index 2? 
+ 
+class=slide_toggle_content style="display: none;">
+num = [1,2,3,4,5,6,7]
+index = 0
+For val in num:
+index = index + 1
+If index == 1 or index == 2:
+continue
+print(“Value”,val)
+
+Q68. Explain recursive function with an example? 
+ 
+class=slide_toggle_content style="display: none;">
+Recursion is the process of coding a problem, in which a function calls itself one or more times in the body of code. When it is returning the return value of this function call. If a function fulfils the condition of recursion, then it is known as recursive function.
+Example: finding the factorial value.
+n = 5
+def factorial (n):
+if n == 1:
+return 1
+else:
+return n*factorial(n- 1)
+Output: 120
+
+Q69. Write a code to check whether a key is present in dictionary or not? 
+ 
+class=slide_toggle_content style="display: none;">
+Dict = {‘Name’: ‘Ayesha’, ‘School’: ‘DPS’}
+key  = input()
+if key in Dict.key():
+print(“Key is present”)
+else:
+print(“Key is not present”)
+
+Q70. Write a code to convert the fieldname as a value in column? 
+ 
+class=slide_toggle_content style="display: none;">
+import pandas as pd
+data = pd.series{‘A’:[1,2], ‘B’:[3,4]}
+df = pd.DataFrame(data)
+Print(df)
+df1 = pd.melt(df,var_name = ‘stack’, value_name = ‘value’)
+Print(df1)
+Output: df = df1 =
+A B stack value
+1 3 A 1
+2 4 A 2
+B 3
+B 4
+
+Q71. Why all the memory is not de-allocated when python gets exit? 
+ 
+class=slide_toggle_content style="display: none;">
+It is not possible to de-allocate the memory that is reserved by the C library.
+The python modules which are having circular references to the other objects are not always de-allocated.
+Due to its own clean up mechanism, python would try to de-allocate every other object.
+
+Q72. Write a code to form a sentence from the given strings? 
+ 
+class=slide_toggle_content style="display: none;">
+import pandas as pd
+import numpy as np
+s = pd.series([‘python’,’is’,’an’,’interpreter’])
+s.str.cat(sep = ‘_’)
+output:
+python_is_an_interpreter
+
+Q73. How many rows and columns can be displayed in python? 
+ 
+class=slide_toggle_content style="display: none;">
+The maximum number of rows and columns are [60*20] to be get displayed in a Data Frame.
+But we can set the maximum number as below so that we can increase the number of rows and columns to be displayed.
+Syntax:  pd.set_option(“Display.max_rows”,100)
+
+Q74. Create a code to generate random numbers? 
+ 
+class=slide_toggle_content style="display: none;">
+import pandas as pd
+import numpy as np
+df = pd.DataFrame(np.random.randn(1,2))
+print(df)
+output:   0.1234   1.2345
+
+Q75. Differentiate range and xrange? 
+ 
+class=slide_toggle_content style="display: none;">
+Xrange will not able to generate a static list at run-time like range does.
+It creates the values as we need them with a special technique called yielding.
+This is used with a type of objects known as generators.
+It means if we have a large range to be get generate a list for, say a billion, xrange is the best function to be used.
+
+Q76. Write the syntax to get the directory in which you’re working? 
+ 
+class=slide_toggle_content style="display: none;">
+Syntax: import os
+Print(os.getcwd( ))
+
+Q77. What are the file related modules in python? 
+ 
+class=slide_toggle_content style="display: none;">
+Python provides modules with functions which enable you to manipulate text and binary files on the file system. Based on them you can create files, update the contents, copy, and delete files.
+The modules are os, shutil.
+
+Q78. How to open a text file and display its contents? 
+ 
+class=slide_toggle_content style="display: none;">
+with open(“file-name”, ‘r’) as f:
+filedata = fp.read( )
+print(filedata)
+
+Q79. What are the types of sequences supported by python? 
+ 
+class=slide_toggle_content style="display: none;">
+Python supports 7 sequence types. They are str, list, tuple, unicode, xrange, byte array, and buffer.
+
+Q80. How to create a class in python? 
+ 
+class=slide_toggle_content style="display: none;">
+Class is a blueprint created by a programmer for an object.
+This defines a set of attributes that will characterize any object that is instantiated from this class.
+class shark:
+def swim(self):
+print(“The shark is swimming”)
+def  be_awesome(self):
+print(“The shark is being awesome”)
+
+Q81. What is a constructor and how does it used in python? 
+ 
+class=slide_toggle_content style="display: none;">
+The constructor method is used to initialize data. It gets run as soon as an object of a class is defined. The constructor is defined as “ __init__” method, it will be the first definition of a class and looks as follows:
+class shark:
+def __ init __(self):
+print(“This is the constructor method”)
+
+Q82. Write a sort algorithm for a dataframe in python? 
+ 
+class=slide_toggle_content style="display: none;">
+import pandas as pd
+import numpy as np
+df = pd.DataFrame({‘A’:[3,1,1],’B’:[1,3,2]})
+sort = df.sort_values(by = ‘B’)
+print(sort)
+
+Q83. How to convert a date in a string to numeric format when taken from datasheet? 
+ 
+class=slide_toggle_content style="display: none;">
+There are two methods to convert dates in string format to numeric format:
+D = [11/7/2018] #this is a object type date
+Syntax: D.split(‘/’) or
+Syntax: D.replace(‘/’,’’)
+
+Q84. What is heap-max and heap-min? 
+ 
+class=slide_toggle_content style="display: none;">
+In, a heap-max the key at root should be maximum among all the keys present in the heap. The same property must be recursively true for all nodes.
+In a heap-min the key at root should be minimum among all the keys present in the heap. The same property should be recursively true for all nodes.
+
+Q85.What is simPY and how used in python? 
+ 
+class=slide_toggle_content style="display: none;">
+SimPY comes with data collection capabilities.
+For data analysis task such as statistics and plotting it is suggested to be used along with other libraries that make up the python centered on Numpy and Scipy.
+
+Q86. How to provide the name and scope in python? 
+ 
+class=slide_toggle_content style="display: none;">
+When we assign as (a = 2), here 2 is an object stored in memory and ‘a’ is the name we associate with. We can get the address (in RAM) of object through the built – in function, id( ).
+Example: a = 2
+Print(‘id(2) =’,id(2))
+Output: id(2) = 10919424
+
+Q87. How can we track the different version of a code? 
+ 
+class=slide_toggle_content style="display: none;">
+Git is the normal version which we use generally but there are many other versions like subversion.
+If we don’t have a version to write a code then it will be just like water without a bottle. But, if we are dealing with any significant amount of code, a version control system will be beneficial.
+Version control will help us to keep tracking of who made changes to the code.
+
+Q88. Write a code to open a csv file? 
+ 
+class=slide_toggle_content style="display: none;">
+With open( ‘filename.csv’) as csvfile:
+Readcsv = CSV.reader(csvfile,delimiter = ‘,’)
+
+Q89. Define mergesort function? 
+ 
+class=slide_toggle_content style="display: none;">
+Mergesort function is used to merge two halves of a data.
+Merge is the single operation for all the standard database join operations between dataframe objects.
+
+Q90. What is inheritance? 
+ 
+class=slide_toggle_content style="display: none;">
+When a class uses methods constructed under another class then it is defined a s inheritance.
+Classes termed as child or subclass inherit methods and variables from parent class or base class.
+
+Q91. Write a code to convert the fieldname as a value in column? 
+ 
+class=slide_toggle_content style="display: none;">
+import pandas as pd
+data = pd.series{‘A’:[1,2], ‘B’:[3,4]}
+df = pd.DataFrame(data)
+Print(df)
+df1 = pd.melt(df,var_name = ‘stack’, value_name = ‘value’)
+Print(df1)
+Output: df =                            df1 =
+A         B                                             stack    value
+1          3                                              A         1
+2          4                                              A         2
+B         3
+B         4
+
+Q92. Why all the memory is not de-allocated when python gets exit? 
+ 
+class=slide_toggle_content style="display: none;">
+It is not possible to de-allocate the memory that is reserved by the C library. The python modules which are having circular references to the other objects are not always de-allocated. Due to its own clean up mechanism, python would try to de-allocate every other object.
+
+Q93. Write a code to form a sentence from the given strings? 
+ 
+class=slide_toggle_content style="display: none;">
+import pandas as pd
+import numpy as np
+s = pd.series([‘python’,’is’,’an’,’interpreter’])
+s.str.cat(sep = ‘_’)
+output:
+python_is_an_interpreter
+
+Q94. How many rows and columns can be displayed in python? 
+ 
+class=slide_toggle_content style="display: none;">
+The maximum number of rows and columns are [60*20] to be get displayed in a Data Frame. But we can set the maximum number as below so that we can increase the number of rows and columns to be displayed.
+Syntax:  pd.set_option(“Display.max_rows”,100)
+
+Q95. Create a code to generate random numbers? 
+ 
+class=slide_toggle_content style="display: none;">
+import pandas as pd
+import numpy as np
+df = pd.DataFrame(np.random.randn(1,2))
+print(df)
+output:   0.1234    1.2345
+
+Q96. Differentiate range and xrange? 
+ 
+class=slide_toggle_content style="display: none;">
+xrange will not able to generate a static list at run-time like range does. It creates the values as we need them with a special technique called yielding. This is used with a type of objects known as generators. It means if we have a large range to be get generate a list for, say a billion, xrange is the best function to be used.
+
+Q97. Write the syntax to get the directory in which you’re working? 
+ 
+class=slide_toggle_content style="display: none;">
+Syntax: import os
+Print(os.getcwd( ))
+
+Q98. What are the file related modules in python? 
+ 
+class=slide_toggle_content style="display: none;">
+Python provides modules with functions which enable you to manipulate text and binary files on file system. Based on them you can create files, update the contents, copy, and delete files. The modules are os, shutil.
+
+Q99. How to open a text file and display its contents? 
+ 
+class=slide_toggle_content style="display: none;">
+with open(“file-name”, ‘r’) as f:
+filedata = fp.read( )
+print(filedata)
+
+Q100. What are the types of sequences supported by python? 
+ 
+class=slide_toggle_content style="display: none;">
+Python supports 7 sequence types. They are str, list, tuple, unicode, xrange, byte array, and buffer.
+
+Q101. How to create a class in python? 
+ 
+class=slide_toggle_content style="display: none;">
+Class is a blueprint created by a programmer for an object. This defines a set of attributes that will characterize any object that is instantiated from this class.
+class shark:
+def swim(self):
+print(“The shark is swimming”)
+def  be_awesome(self):
+print(“The shark is being awesome”)
+
+Q102. What is a constructor and how does it used in python? 
+ 
+class=slide_toggle_content style="display: none;">
+The constructor method is used to initialize data. It gets run as soon as an object of a class is defined. The constructor is defined as “ __init__” method, it will be the first definition of a class and looks as follows:
+class shark:
+def __ init __(self):
+print(“This is the constructor method”)
+
+Q103. Write a sort algorithm for a dataframe in python? 
+ 
+class=slide_toggle_content style="display: none;">
+import pandas as pd
+import numpy as np
+df = pd.DataFrame({‘A’:[3,1,1],’B’:[1,3,2]})
+sort = df.sort_values(by = ‘B’)
+print(sort)
+
+Q104.How to convert date in string to numeric format when taken from datasheet? 
+ 
+class=slide_toggle_content style="display: none;">
+There are two methods to convert dates in string format to numeric format:
+D = [11/7/2018]#this is a object type date
+Syntax: D.split(‘/’)      or
+Syntax: D.replace(‘/’,’’)
+
+Q105. What is heap-max and heap-min? 
+ 
+class=slide_toggle_content style="display: none;">
+In a heap-max the key at root should be maximum among all the keys present in the heap. The same property must be recursively true for all nodes.
+In a heap-min the key at root should be minimum among all the keys present in the heap. The same property should be recursively true for all nodes.
+
+Q106. What is simPY and how used in python? 
+ 
+class=slide_toggle_content style="display: none;">
+simPY comes with data collection capabilities. For data analysis task such as statistics and plotting it is suggested to be used along with other libraries that make up the python centered on Numpy and Scipy.
+
+Q107. How to provide the name and scope in python? 
+ 
+class=slide_toggle_content style="display: none;">
+When we assign as (a = 2), here 2 is an object stored in memory and ‘a’ is the name we associate with. We can get the address (in RAM) of object through the built – in function, id( ).
+Example:         a = 2
+Print(‘id(2) =’,id(2))
+Output: id(2) = 10919424
+
+Q108. How can we track the different version of a code? 
+ 
+class=slide_toggle_content style="display: none;">
+Git is the normal version which we use generally but there are many other versions like subversion.
+If we don’t have a version to write a code then it will be just like water without a bottle. But, if we are dealing with any significant amount of code, a version control system will be beneficial. Version control will help us to keep tracking of who made changes to the code.
+
+Q109. Write a code to open a csv file? 
+ 
+class=slide_toggle_content style="display: none;">
+With open( ‘filename.csv’) as csvfile:
+Readcsv = CSV.reader(csvfile,delimiter = ‘,’)
+
+Q110. Define mergesort function? 
+ 
+class=slide_toggle_content style="display: none;">
+Mergesort function is used to merge two halves of a data. Merge is the single operation for all the standard database join operations between data frame objects.
+
+Q111. What is inheritance? 
+ 
+class=slide_toggle_content style="display: none;">
+When a class uses methods constructed under another class then it is defined a s inheritance. Classes termed as child or subclass inherit methods and variables from parent class or base class.
+
+Q112. What is the difference between lists and tuples? 
+ 
+class=slide_toggle_content style="display: none;">Tuples are immutable objects, while lists are mutable
+
+Q113. What are the programming paradigms’ of python? 
+
+class=slide_toggle_content style="display: none;">Its object oriented, functional, procedural and inferential
+
+Q114. What is the python type with respect to variable declaration and execution? 
+
+class=slide_toggle_content style="display: none;">Python is strongly typed language; we can’t add two variables with different types
+
+Q115. What is the python type with respect to variable initialization? 
+
+class=slide_toggle_content style="display: none;">Python is a dynamically typed language
+
+Q116. How indenting is done in python for loops? 
+
+class=slide_toggle_content style="display: none;">Python use namespaces for indenting, instead of loops which was used in other programming languages
+
+Q117. What is the programming language used to develop python? 
+
+class=slide_toggle_content style="display: none;">C language is used to develop the most popular python distribution CPython, there are other python distribution as well.
+
+Q118. Name the types of Python distrubutions? 
+
+class=slide_toggle_content style="display: none;">
+1)CPython (Based on C)
+2) Jython( Based on java runtime environment)
+3) Iron Python ( Based on C# runtime environment)
+4) PyPy (Python within Python)
+5) Stackless Python
+
+Q119. Can we use single quotes for displaying texts in Python? 
+
+class=slide_toggle_content style="display: none;">Yes we can use both single and double quotes for displaying texts, but its advisable to use different quotes if we use one inside the quote
+
+Q120. What will be the output when we use / and // for division? 
+
+class=slide_toggle_content style="display: none;">
+/ &#8211; divides the number and display the quotient in floating point
+// &#8211; divides the number and display the quotient in integers
+
+Q121. Does python requires ; to end a statement? 
+
+class=slide_toggle_content style="display: none;">No python doesn’t require ; for ending statement, this makes Python code highly readable
+
+ Q122. Server-side scripting language? 
+ 
+Python has a server side scripting language with object oriented concept with scientific oriented language.
+
+ Q123. Does not depend on memory allocation in the language? 
+ 
+Python is a fully supported memory allocation management. That is need not worry about the allocation of memory while creating an variable.
+
+ Q124. Games  development? 
+ 
+Using python modules you can develop games like Mario and tic-tac-toe.
+
+ Q125. Scientific-oriented development? 
+ 
+Using python can you develop scientific  oriented like data science.
+
+ Q126. Can you declare or represent a data in the format of arrays? 
+ 
+Python having collections to create an array of value with different format.
+
+ Q127. Can you develop software prototypes? 
+ 
+Yes you can develop software prototypes using python like Numpy module.
+
+ Q128. Can you declare raw data in any scripting language? 
+ 
+Yes you can declare raw data in python.
+
+ Q129. Can you create collection of values which is Mutable? 
+ 
+Yes using List in python.
+
+ Q130. Can you create collection of values which is immutable? 
+ 
+Yes using Set in python.
+
+ Q131. Can you create collection of values with updatable? 
+ 
+Using List you can update the values.
+
+ Q132. Can you convert one data type to another without losing data? 
+ 
+Implicit.
+
+ Q133. Can you read the values from the user? 
+ 
+Using input in python.
+
+ Q134. Can you display the output in string formatted output? 
+ 
+Using string.format() function.
+
+ Q135. Which operator is used for power of y? 
+ 
+** Exponent.
+
+ Q136. What are the special operators in python? 
+ 
+Identity and Member.
+
+ Q137. Which operator is used to check both are identical? 
+ 
+is operator
+
+ Q138. Which operator is used to check value/variable in the sequence? 
+ 
+in operator
+
+ Q139. Which are the decision making in python? 
+ 
+If and If..elif..else
+
+ Q140. To print a sequence of values in a single line of statement? 
+ 
+range()
+
+ Q141. Which collection is used to create one-to-one relationship? 
+ 
+Dictionary
+
+ Q142. How to send no.of arguments in function? 
+ 
+Using * with paramenter-name
+
+ Q143. Basic data type supported in python? 
+ 
+int. float, none, str, Boolean
+
+ Q144. Check the type of the variable in python? 
+ 
+typeof()
+
+ Q145. How to add an existing module in python? 
+ 
+Using import
+
+ Q146. How to get last value in a list? 
+ 
+a[-1]
+
+ Q147. Which one is doing concurrent execution? 
+ 
+Thread
+
+ Q148. How to add new value in the list? 
+ 
+Using Insert() function
+
+ Q149. How to add or extend value in the list? 
+ 
+Using extend() function
+
+ Q150. How to copy one list to another? 
+ 
+Using list.copy()
+
+ Q151. How to use global variable as local? 
+ 
+Using global keyword
+
+ Q152. How to create a Anonymous function? 
+ 
+Using Lamda
+
+ Q153. How to create a immutable values? 
+ 
+Using Set
+
+ Q154. How to create a complex value? 
+ 
+Using j with the values.
+
+ Q155. Which type of error is showing when a function is not defined? 
+ 
+Name error
+
+ Q156. Which type of error is showing invalid key? 
+ 
+Key error
+
+ Q157. Which one is directly from the source? 
+ 
+Python
+
+ Q158. What are the two ways to object can be copied? 
+ 
+Shallow and Deep Copy
+
+ Q159. What is the output of  array(1,2,3)? 
+ 
+3
+
+ Q160. Output of array(1,2,3)+ array(4,5,6)? 
+ 
+class=slide_toggle_content style="display: none;">
+[1,2,3,4,5,6]
+
+ Q161. How to compare two lists? 
+ 
+cmp()
+
+ Q162. How to sorting in python? 
+ 
+List.sort()
+
+ Q163. What are operators available for operator overloading give one example? 
+ 
+__add__(self,other)
+
+ Q164. What are the set operations? 
+ 
+Union, Intersection, Difference
+
+ Q165. Which module is used to display the current date &amp; time? 
+ 
+datetime
+
+ Q166. How to handle errors in python? 
+ 
+Using try and catch
+
+ Q167. Which module is used for data connection? 
+ 
+PyMysql
+
+ Q168. Which is the framework for develop a web page? 
+ 
+Django and Bottle
+
+ Q169. Which module is used to config the database in django? 
+ 
+Setting.py
+
+ Q170. What is migration? 
+ 
+This is used to convert the code to corresponding module in django
+
+ Q171. Which command is used to create admin in django? 
+ 
+Create super user
+
+ Q172. What are python lists? 
+ 
+Python lists can store data of different datatypes enclosed within square brackets([]). Lists are mutable
+
+ Q173. How python lists different from python tuples? 
+
+Python lists are mutable and python tuples are immutable. Elements in a python list are enclosed with square brackets([] whereas elements in python tuples are enclosed within brackets().
+
+ Q174. Name few string functions in python.
+class=slide_toggle_content style="display: none;"><ul><li>toupper(): converts string to uppercase.</li><li>tolower(): converts string to lower case.</li><li>title(): converts first letter of each word in a string to uppercase.</li><li>Capitalize(): converts the first letter of the first word in a sentence to uppercase.</li><li>Islower(): checks if the characters of a string are in lowercase.</li><li>Isupper(): checks if the characters of a string are in uppercase.
+</div></li></ul><h4 class="slide_toggle"><a
+ Q175. Name few list functions in python.
+class=slide_toggle_content style="display: none;"><ul><li>Append()</li><li>Extend()</li><li>Sort()
+</div></li></ul><h4 class="slide_toggle"><a
+ Q176. How to convert list to string? 
+
+It is converted using join function.Str1=“  “.join(lst1)Str1: the string obtained from the listlst1: the list that has to be converted to string
+
+ Q177. How to convert string to list? 
+
+It is converted using split function.lst1=str1.split(“  “)str1: the string that has to be converted to listlst1: the list obtained from string
+
+ Q178. Name the different looping constructs in python.
+The two looping constructs in python are ‘for’ and ‘while’  loop.
+
+ Q179. We have do while looping construct in python(True/False)
+False
+
+ Q180. Suppose lst1=array ( 34,32,90,87,44) , what is lst array (-1) ? 
+ 
+44
+
+ Q181. Who invented python? 
+
+Guido van Rossum
+
+ Q182. How to define blocks in python? 
+
+Blocks in python is defined using indentation
+
+ Q183. Name few built in python exceptions.
+class=slide_toggle_content style="display: none;"><ul><li>IOError</li><li>EOFError</li><li>TypeError</li><li>ValueError</li><li>NameError</li><li>IndentationError
+</div></li></ul><h4 class="slide_toggle"><a
+ Q184. Write structure of python nexception handling.
+try:#suspicious codeexcept:#error handlerfinally:#executes regardless of exception is raised or not
+
+ Q185. Name modules that could be imported to a python program.
+class=slide_toggle_content style="display: none;"><ul><li>Math module</li><li>Random module</li><li>Turtle module</li><li>OS module
+</div></li></ul><h4 class="slide_toggle"><a
+ Q186. How do you include modules into a python program
+Modules are included in a python program using import statement
+
+ Q187. How to create a python function? 
+
+Python function is created using def statement
+
+ Q188. How to return values from a python function? 
+
+Values are returned from python functions using return statement.
+
+ Q189. Does python have a case statement? 
+
+Python does not have a case statement.
+
+ Q190. What are the type of files that could be handled using python file handling? 
+
+Text files and binary files
+
+ Q191. What are the arithematic operators that python supports? 
+
++: addition-: subtraction*: multiplication/: division%: modulus operation//: floor division
+
+ Q192. What are python dictionaries? 
+
+Python dictionaries consists of keys and values, values in a dictionary can be accessed using keys. Dictionaries are mutable.
+
+ Q193. Which module is used in python to create graphics? 
+
+Turtle module is used.
+
+ Q194. S={} implies the creation of which datatype? 
+
+It refers to creation of dictionary.
+
+ Q195. What is the output of, S={1,8,8,5,9,4,4} print(S)
+Output:{1,8,5,9,4}
+
+ Q196. How to declare an empty set in python? 
+
+A=set() is used to declare an empty set in python.
+
+ Q197. What is the output of ,T=(1,2), Print  2*T
+(1,2,1,2)
+
+ Q198. What are the basic function involved in file handling? 
+
+The basic functions include,Open: f=open(“file.txt”)Close: f.close()
+
+ Q199. What are the different modes in file handling in python? 
+
+The modes include read, write, appendboth binary as well as text files.
+
+ Q200. Python is a case sensitive language, true or false? 
+
+True
+
+ Q201. What is the output of str1 array(1) if str1=’Python’? 
+
+Y
+
+ Q202. What is break statement in python? 
+
+Break statement terminated and moves to line following the loop.
+
+ Q204. What is continue statement in python? 
+
+class=slide_toggle_content style="display: none;">
+Continue statement terminates the current iteration and resumes from the next iteration.
+
+ Q205. What is the use of choice function in python? 
+
+Choice functiion in random module returns  a random item from the sequence(list or tuple).
+
+ Q206. How do you sort elements in a list? 
+
+Using sort() function.
+
+ Q207. How do you reverse elements in a list? 
+
+Using reverse function.
+
+ Q208. What is  the  use of insert statement  in  python ? 
+
+It is  used to insert  an element  at a particular  index in python.
+
+ Q209. Does lambda  function  in have  a return  statement ? 
+
+No, python function  does  not  have  a return  statement.
+
+ Q210. What is the  output  of  print (2,3,7,9) sep=’$’? 
+
+class=slide_toggle_content style="display: none;">
+2$3$7$9
+
+ Q211. How to take input from  user  in python ? 
+
+Using raw_input() or input()  function.
+
+ Q212. Nums= array (2,4,5), print(Nums) 
+class=slide_toggle_content style="display: none;">
+[2,4,5]
+
+ Q213. print(6&lt;=6) What  is the output  of the following codes? 
+
+True
+
+ Q214. lst= array (A,M,K) str1=” “join(lst) What  is the output  of the following codes? 
+
+AMK
+
+ Q215. str1=’AMK’ lst=str1.split(‘,’) array (A,M,K) What  is the output  of the following codes? 
+
+Str2=’mathematics’
+
+ Q216. Str2 array(2) What  is the output  of the following codes? 
+
+t
+
+ Q217. Str2 array (0) What  is the output  of the following codes? 
+
+m
+
+ Q218. Str2 array (9:) What  is the output  of the following codes? 
+
+Cs
+
+ Q219. Str2 array(-1) What  is the output  of the following codes? 
+
+S
+
+ Q220. Str2 array (::-1) What  is the output  of the following codes? 
+
+scitamehtam
+
+ Q221. What will be the output ? 
+name = ‘PYTHON’ print(name array(:3))
+PYT
+
+ Q222. What will be the Output ? 
+s = (2,4,8)  s*2
+(2,4,8,2,4,8) (Correct answer)
+
+ Q223. What is the data type of 'L' in below code ? 
+L = array (‘Python’, 1, ‘is’, 1, ‘awesome’)
+List
+
+ Q224. In order to store values in terms of key and value we use what core datatype.
+Dictionary
+
+ Q225. What is the output of the following ? 
+elements = array(0,1,2) def incr(x): return x+1 print(list(map(elements,incr)))
+Error
+
+ Q226. What is the output of the following ? 
+my_string = 'hello world' k = array((i.upper(), len(i)) for i in my_string) print(k)
+class=slide_toggle_content style="display: none;">
+[(‘H’, 1), (‘E’, 1), (‘L’, 1), (‘L’, 1), (‘O’, 1), (‘ ‘, 1), (‘W’, 1), (‘O’, 1), (‘R’, 1), (‘L’, 1), (‘D’, 1)]
+
+ Q227. Which is the standard data missing marker used in Pandas ? 
+
+NaN
+
+ Q228. What is the method to obtain the frequencies of a data column? 
+
+value_counts()
+
+ Q229. Which code deletes a column from a dataframe? 
+
+df.drop([&#8216;col1&#8217;],axis=1)
+
+ Q230. What is the output of below program ? 
+lamb = lambda   x : x**3  print(lamb(5))
+125
+
+ Q231. What will be the output ? 
+print(not(3>4), not(1&amp;1))
+True False
+
+ Q232. Which architecture django follows  ? 
+ 
+MVT
+
+ Q233. What is the data type of 'L' in below code ? 
+L = (9, ‘Python’, 22.0, True)
+Tuple
+
+ Q234. In pandas read_csv method ,which argument can be used to read 'n' number of rows, while reading the file.
+nrows
+
+ Q235. What is the output of the following ? 
+elements = array(3,1,2)  def incr(x): return x+1 print(list(map(incr,elements)))
+class=slide_toggle_content style="display: none;">
+[4,2,3]
+
+ Q236. What is the output of the following ? 
+my_string = 'hello world'   k = array((i.lower(), len(i)) for i in my_string)  print(k)
+class=slide_toggle_content style="display: none;">
+[(‘h’, 1), (‘e’, 1), (‘l’, 1), (‘l’, 1), (‘o’, 1), (‘ ‘, 1), (‘w’, 1), (‘o’, 1), (‘r’, 1), (‘l’, 1), (‘d’, 1)]
+
+ Q237. In pandas read_table what is the default separator ? 
+
+&#8216;\t&#8217;
+
+ Q238. Which attribute is used to obtain the column names of a pandas dataframe ? 
+
+shape
+
+ Q239. Which method is used to sort a pandas dataframe ? 
+
+df.sort_values()
+
+ Q240. What is the output of below program ? 
+L = array (9,0,2,1,0) sorted(set(L))
+class=slide_toggle_content style="display: none;">
+[0,1,2,9]
+
+ Q241. Which of the following are python strings methods ? 
+
+All of the above
+
+ Q242. What will be the Output ? 
+s = (12,14,18)  s + (12,14,18)
+(12,14,18,12,14,18)
+
+ Q243. What is the data type of 'L' in below code ? 
+L = array(1.0, ‘Guido’, 3, ‘Python’, True)
+List
+
+ Q244. In pandas read_csv method ,which argument can be used to read sub-set of columns, while  reading the file.
+usecols
+
+ Q245. axis=0 refer to ______ in pandas and axis=1 refer to _______ in pandas
+rows, columns
+
+ Q246. What is the output of the following ? 
+my_string = 'python' k = array ((i.upper(), len(i)) for i in my_string)  print(k)
+array((‘P’, 1), (‘Y’, 1), (‘T’, 1), (‘H’, 1), (‘O’, 1), (‘N ‘, 1))
+
+ Q247. Which is the standard data missing marker used in Pandas ? 
+
+np.NaN
+
+ Q248. What attribute is used to to obtain the rows and columns count of a pandas dataframe ? 
+
+shape
+
+ Q249. Which code deletes a column from a dataframe ? 
+
+df.drop(array(&#8216;col1&#8217;),axis=1)
+
+ Q250. What is the output of below code ? 
+
+2**3&#8243;]8
+
+ Q251. What will be the output ? 
+player  = ('Male', 32, 'Virat') (gender, age, name) = player print(name,gender,age)
+Virat Male 32
+
+ Q252. What will be the output? 
+s = 'I love Python' print(len(s))
+13
+
+ Q253. What will be the output? 
+False or not True and True
+False
+
+ Q254. What will be the output? 
+x = 0  if x > 0:  print('positive')  elif x == 0:  print('zero')  else:  print('negative')
+zero
+
+ Q255. Which attribute is used to check the data type of each and every column in a pandas dataframe ? 
+
+dtypes
+
+ Q256. What is the output of the following? 
+players = array('Virat', 'Dhoni', 'Rohit', 'Virat')  players.count('Virat')
+2
+
+ Q257. Which method used to drop missing values in a pandas dataframe ? 
+
+dropna()
+
+ Q258. Which following methods cannot be used in pandas groupby ? 
+
+mul()
+
+ Q259. Which code deletes first 2 rows from a dataframe? 
+
+df.drop(array(0,1),axis=0,inplace=True)
+
+ Q260. What is the output of below program? 
+weekdays = array('mon', 'tues', 'wed', 'thurs', 'fri')   weekdays(::2)
+class=slide_toggle_content style="display: none;">
+[&#8216;mon&#8217;, &#8216;wed&#8217;, &#8216;fri&#8217;]
+
+ Q261. What will be the output ? 
+a=(1,2,3,4)  del(array(2))
+Error
+
+ Q262. What will be the Output ? 
+K = array(2, 33, 222, 14, 53)   K array(-2)
+14
+
+ Q263. What is the data type of 'L' in below code ? 
+L = {'Name' : 'Guido',  'Age': 44,  'Gender' : 'Male'}
+Dictionary
+
+ Q264. What is the output of the following code ? 
+'Data Science Using Python'.split()
+class=slide_toggle_content style="display: none;">
+[&#8216;Data&#8217;, &#8216;Science&#8217;, &#8216;using&#8217;,&#8217;Python]
+
+ Q265. What is the output of the following? 
+elements = array(0, 1, 2)   def incr(x):  return x+1  print(list(map(elements,incr)))
+Error
+
+ Q266. What is the output of the following? 
+my_string = 'data sci'     k = array((i.upper(), len(i)) for i in my_string)   print(k)
+class=slide_toggle_content style="display: none;">
+[(&#8216;D&#8217;, 1), (&#8216;A&#8217;, 1), (&#8216;T&#8217;, 1), (&#8216;A&#8217;, 1), (&#8216; &#8216;, 1), (&#8216;S&#8217;, 1), (&#8216;C&#8217;, 1), (&#8216;I&#8217;, 1)]
+
+ Q267. Which method used to rename columns in a pandas dataframe ? 
+
+rename()
+
+ Q268. Which following methods can be used on pandas groupby ? 
+
+All of the above
+
+ Q269. Which code deletes a column from a dataframe ? 
+
+df.drop([&#8216;col1&#8217;],axis=1,inplace=True)
+
+ Q270. What is the output of below program ? 
+def calc(a, b, op='add'):        if op == 'add':  return a + b  elif op == 'sub':return a - b  else:  print('valid operations are add and sub')  calc (10,4)
+14
+
+ Q271. Explain PEP 8
+PEP 8 is said to be a set of recommendation and coding convention. It clearly provides information on how to script your Python code which can be more legible and readable.
+
+ Q272. Explain Python Decorators
+When we perform a specific change to the Python syntax to easily modify functions, such change is called Python Decorators.
+
+ Q273. Provide the tools available to perform static analysis or hunt bugs
+Pylint is an effective tool to verify whether the module achieves the standard coding. PyChecker is the best static analysis tool which finds the bugs in Python source code and give cautions on the bug complexity and styles.
+
+ Q274. Provide the difference between tuple and list in Python
+The list is mutable where the tuple is not. Hashing is possible in the tuple. Example: A key for dictionaries.
+
+ Q275. Provide the mutable built-in types available in Python
+Dictionaries, Sets, and List are the mutable built-in types available in Python.
+
+ Q276. Provide the immutable built-in types available in Python
+Tuple, Numbers and Strings are the immutable built-in types available in Python.
+
+ Q277. Explain Lambda in Python
+Lambda in Python is a single expression unidentified function which is frequently used as inline function.
+
+ Q278. Explain iterators in Python
+To iterate the elements group and containers, Python iterators are used.
+
+ Q279. Describe Generators in Python
+Generators are the ways to implement iterators and this is said to be a normal function in Python.
+
+ Q280. In Python, how will you delete a file? 
+
+Make use of the commands os.unlink(filename) or os.remove (filename) to delete a file in Python.
+
+ Q281. Explain unittest in Python
+We have a framework for unit testing in Python which is called unittest. Unittest is useful for automation testing, sharing of setups, test aggregation into collections and shutdown code for tests.
+
+ Q282. Explain Slicing in Python
+Slicing is the system that allows to select a variety of items from sequence types such as string, tuple, list etc.
+
+ Q283. Provide the different between range and Xrange
+Range is useful in returning the list whereas Xrange helps in returning the xrange object.
+
+ Q284. Explain module in Python
+The module is helpful to structure program in Python. Every single file is called as a module that can import various other modules such as attributes and objects
+
+ Q285. Explain Package in Python
+Python programs are places in a folder and such folders are called as a package in Python. A package can contain subfolders and various modules.
+
+ Q286. Describe namespace in Python
+There is a naming system called namespace in Python, which is helpful in ensuring the names are unique to evade conflicts in the names.
+
+ Q287. Provide the list of type conversions in Python
+Below is the list of type conversions in Python<ul><li>hex()</li><li>int()</li><li>set()</li><li>complex(real,imag)</li><li>str()</li><li>ord()</li><li>tuple()</li><li>list()</li><li>float()</li><li>oct()</li><li>dict()</li></ul>
+
+ Q288. Describe functions in Python
+In Python, a block of code that is executed only while called is called functions. Make use of the keyword def to define a Python function.
+
+ Q289. Explain the working of a break in Python
+Break-in Python permits for loop termination while meeting a condition and transferring the control to the next statement.
+
+ Q290. Explain the working of Continue if Python
+Continue in Python permits the users to skip a few loop parts while meeting some specific condition and transferring the control to the opening of the loop.
+
+ Q291. Explain the working of Pass in Python
+Syntactically, when there is a requirement of some block of code, but execution must be skipped, you can use Pass in Python. Pass is generally a null operation, and nothing is expected to happen when executing this.
+
+ Q292. Describe how to convert a string to lowercase
+Use the lower() function to convert a string to lowercase. This is to convert all to lowercase.
+
+ Q293. Explain the purpose of in, is and not operators in Python
+class=slide_toggle_content style="display: none;"><ul><li>in: Verifies whether some elements are available in some sequence</li><li>is:  Gives a value as true when we have 2 operands as true</li><li>not: Inverse of the Boolean value is returned using not</li></ul>
+
+ Q294. Explain the usage of help() function in Python
+The help() function displaying the documentation string. In addition, users can get help related to attributes, keywords, and modules.
+
+ Q295. Explain the usage of dir() function in Python
+For displaying the defined symbols, make use pf the dir() function.
+
+ Q296. What is the working of the len() function in Python? 
+
+The function len() in Python is used to determine the length of an array, list, string and few more
+
+ Q297. What are the ways to remove values in a Python array? 
+
+Use remove() or pop() methods to remove array elements in Python.
+
+ Q298. Do you think Oops concept is available in Python? 
+
+As Python is an object-oriented programming language, by creating an object model, you can solve any program in python. It possible to treat Python as both structural and procedural language.
+
+ Q299. Explain shallow copy in Python
+When there is a creation of new instance type and it maintains the values, which are copied in the new instance, Shallow copy is utilized. Like values, Shallow copy is also helpful in copying the reference pointers.
+
+Q300. Given a list and a number find two numbers in the list that sums up to the number given? 
+ 
+class=slide_toggle_content style="display: none;">
+a = [1,2,3,4,5,6,8] given_no = 9
+mm = [] count =0
+for x,y in enumerate(a):
+for j in range(x+1, len(a)):
+total_of_two_items = a[x] + a[j] if total_of_two_items == given_no:
+mm.append((a[x],a[j]))
+print mm
+</div>
